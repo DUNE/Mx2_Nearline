@@ -8,6 +8,7 @@ from influxdb import InfluxDBClient
 import threading
 import json
 import traceback
+from PIL import Image, ImageFont, ImageDraw
 
 # GET TIME FROM FILE
 def get_modification_time(input_path):
@@ -19,21 +20,28 @@ def get_modification_time(input_path):
     chicago_time = utc_time.replace(tzinfo=timezone.utc).astimezone(chicago_timezone)
     return chicago_time.strftime("%m-%d-%Y %H:%M:%S")
 
+# ADD TIMESTAMP ON TOP OF DQM PLOT
+def add_margin(pil_img, creation_time, top, right, bottom, left, color):
+    width, height = pil_img.size
+    new_width = width + right + left
+    new_height = height + top + bottom
+    result = Image.new(pil_img.mode, (new_width, new_height), color)
+    result.paste(pil_img, (left, top))
+    draw = ImageDraw.Draw(result)
+    font = ImageFont.truetype("/home/acd/acdcs/2x2/MINERvA_DQM_PlotTransfer/Roboto-Medium.ttf", 80, encoding="unic")
+    # Add timestamp to the image
+    draw.text((10, 10), "Modified at: " + creation_time, font=font)
+    result.resize((200,200), resample=Image.LANCZOS)
+    return result
+
 # ADD TIMESTAMP ON TOP OF THE PNG FILE
 def add_timestamp_to_image(input_path, output_path):
-    # Load the image
-    img = plt.imread(input_path)
     # Get creation time of the input image file
     creation_time = get_modification_time(input_path)
-    # Add timestamp to the image
-    plt.imshow(img)
-    plt.text(10, -150, f'Modified at: {creation_time}', color='white', fontsize=12,
-             bbox=dict(facecolor='black', alpha=0.7), verticalalignment='top')
-    # Remove axis
-    plt.axis('off')
-    # Save the modified image
-    plt.savefig(output_path, bbox_inches='tight', pad_inches=0)
-    plt.close()
+    # Load the image
+    Im=Image.open(input_path)
+    im_new = add_margin(Im, creation_time, 100, 0, 0, 0, (0, 0, 0))
+    im_new.save(output_path)
 
 # EXECUTE CONTINUOUS PLOT TRANSFERING
 def main():
