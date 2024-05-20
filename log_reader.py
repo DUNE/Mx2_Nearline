@@ -56,6 +56,7 @@ def save_last_log_entry(rc_file_path, dispatcher_file_path, output_file_path):
 
 # MAIN FUNCTION
 def main():
+    # Use last version of log files!
     try:
         while True:
             rc_file_path = '/work/logs/runcontrol.log'
