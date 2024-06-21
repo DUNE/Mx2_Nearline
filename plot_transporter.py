@@ -43,14 +43,27 @@ def add_timestamp_to_image(input_path, output_path):
     im_new = add_margin(Im, creation_time, 100, 0, 0, 0, (0, 0, 0))
     im_new.save(output_path)
 
+# GET TEXT FROM ONLINE COMPONENT (NuMI)
+import requests
+from bs4 import BeautifulSoup
+def get_numi_status():
+    # Fetch the webpage content
+    response = requests.get("https://dbweb9.fnal.gov:8443/ifbeam/bmon/numimon/Display")
+    # Parse the HTML content using BeautifulSoup
+    soup = BeautifulSoup(response.content, 'html.parser')
+    component = soup.find(id="tsa9")
+    return component.get_text()
+
 # EXECUTE CONTINUOUS PLOT TRANSFERING
 def main():
 
     # Iterate over each file in the directory
-    directory = "/home/nfs/minerva/dqmtest_cpernas/SL7_testing/gmbrowser/plots/"
+    #directory = "/home/nfs/minerva/Mx2_Monitoring/Mx2_Nearline/plots_png"
+    directory = "/home/acd/acdcs/2x2/MINERvA_DQM_PlotTransfer/nearline_plots"
 
     # Log entry file
-    log_entry_file = "/home/nfs/minerva/Mx2_monitoring/last_log_entry.txt"
+    #log_entry_file = "/home/nfs/minerva/Mx2_monitoring/LogReader/last_log_entry.txt"
+    log_entry_file = "/home/acd/acdcs/2x2/MINERvA_DQM_PlotTransfer/last_log_entry.txt"
 
     # Source InfluxDB connection settings
     source_host = '192.168.197.46'
@@ -76,7 +89,7 @@ def main():
             add_timestamp_to_image(input_path, output_path)
 
             # Read JSON line from file
-            log_entry_file = "/home/nfs/minerva/Mx2_monitoring/last_log_entry.txt"
+            log_entry_file = "/home/acd/acdcs/2x2/MINERvA_DQM_PlotTransfer/last_log_entry.txt"
             with open(log_entry_file, 'r') as file:
                 json_line = file.readline().strip()
             data = json.loads(json_line)
@@ -89,6 +102,9 @@ def main():
             daq_status = data['DAQ_status']
             mode = data['mode']
             DAQ_summary_log = data['DAQ_summary_log']
+            daq_file_size = data['daq_file_size']
+            daq_file_name = data['daq_file_name']
+            numi_status = get_numi_status()
 
             # Define data point
             data_point = {
@@ -101,6 +117,9 @@ def main():
                     "message": message,
                     "daq_status" : daq_status,
                     "daq_summary_log" : DAQ_summary_log,
+                    "daq_file_size" : daq_file_size,
+                    "daq_file_name" : daq_file_name,
+                    "numi_status" : numi_status,
                     "mode" : mode
                 }
             }

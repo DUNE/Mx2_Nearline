@@ -2,3 +2,5 @@ matplotlib
 Pillow
 pytz
 influxdb
+requests 
+beautifulsoup4
