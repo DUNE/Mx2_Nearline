@@ -8,4 +8,7 @@ services:
       dockerfile: Dockerfile
     volumes:
       - /work/logs/:/work/logs/
-      - /home/nfs/minerva/Mx2_monitoring/last_log_entry.txt:/home/nfs/minerva/Mx2_monitoring/last_log_entry.txt
+      - /work/data/rawdata:/work/data/rawdata
+      - /work/data/dst:/work/data/dst
+      - /home/acd/acdcs/2x2/MINERvA_DQM_PlotTransfer/last_log_entry.txt:/home/acd/acdcs/2x2/MINERvA_DQM_PlotTransfer/last_log_entry.txt
+      - /home/acd/acdcs/2x2/MINERvA_DQM_PlotTransfer/nearline_plots/event.png:/home/acd/acdcs/2x2/MINERvA_DQM_PlotTransfer/nearline_plots/event.png

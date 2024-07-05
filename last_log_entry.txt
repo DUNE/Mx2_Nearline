@@ -1,1 +1,0 @@
-{"DAQ_status": "[2024-05-27 11:56:18]     INFO:      ==> Started successfully.", "DAQ_summary_log": "==> Started successfully.", "mode": "Numi Beam", "subrun_number": "4", "run_number": "1737", "message": "[2024-05-26 13:29:25]    DEBUG:  Panel shown:", "type": "DEBUG"}
