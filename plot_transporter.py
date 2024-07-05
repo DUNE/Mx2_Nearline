@@ -36,13 +36,18 @@ def add_margin(pil_img, creation_time, top, right, bottom, left, color):
 
 # ADD TIMESTAMP ON TOP OF THE PNG FILE
 def add_timestamp_to_image(input_path, output_path):
-    # Get creation time of the input image file
-    creation_time = get_modification_time(input_path)
-    # Load the image
-    Im=Image.open(input_path)
-    im_new = add_margin(Im, creation_time, 100, 0, 0, 0, (0, 0, 0))
-    im_new.save(output_path)
+    if "event.png" not in input_path:
+        # Get creation time of the input image file
+        creation_time = get_modification_time(input_path)
+        # Load the image
+        Im=Image.open(input_path)
+        im_new = add_margin(Im, creation_time, 100, 0, 0, 0, (0, 0, 0))
+        im_new.save(output_path)
+    else:
+        Im=Image.open(input_path)
+        Im.save(output_path)
 
+'''
 # GET TEXT FROM ONLINE COMPONENT (NuMI)
 import requests
 from bs4 import BeautifulSoup
@@ -53,6 +58,7 @@ def get_numi_status():
     soup = BeautifulSoup(response.content, 'html.parser')
     component = soup.find(id="tsa9")
     return component.get_text()
+'''
 
 # EXECUTE CONTINUOUS PLOT TRANSFERING
 def main():
@@ -81,12 +87,12 @@ def main():
                     # Input and output paths for each file
                     input_path = os.path.join(directory, filename)
                     output_path = os.path.join("/data/grafana/Mx2/", os.path.basename(input_path))
-                    
                     # Add timestamp to the image
                     add_timestamp_to_image(input_path, output_path)
             
-            # Add timestamp to the image
-            add_timestamp_to_image(input_path, output_path)
+            #if "event.png" not in filename:
+                # Add timestamp to the image
+            #    add_timestamp_to_image(input_path, output_path)
 
             # Read JSON line from file
             log_entry_file = "/home/acd/acdcs/2x2/MINERvA_DQM_PlotTransfer/last_log_entry.txt"
@@ -104,7 +110,6 @@ def main():
             DAQ_summary_log = data['DAQ_summary_log']
             daq_file_size = data['daq_file_size']
             daq_file_name = data['daq_file_name']
-            numi_status = get_numi_status()
 
             # Define data point
             data_point = {
@@ -119,7 +124,6 @@ def main():
                     "daq_summary_log" : DAQ_summary_log,
                     "daq_file_size" : daq_file_size,
                     "daq_file_name" : daq_file_name,
-                    "numi_status" : numi_status,
                     "mode" : mode
                 }
             }
